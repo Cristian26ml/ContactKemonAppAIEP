@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Contacto nuevo = new Contacto();
-                nuevo.nombre = "Contacto de prueba";
+                nuevo.nombre = "Contacto solo de prueba aiep";
                 nuevo.telefono = "912345678";
-                nuevo.email = "prueba@correo.com";
+                nuevo.email = "pruebaaiep@correo.com";
                 nuevo.favorito = false;
 
                 db.contactoDao().insertar(nuevo);
