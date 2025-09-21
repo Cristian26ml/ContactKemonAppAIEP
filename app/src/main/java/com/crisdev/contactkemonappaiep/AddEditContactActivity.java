@@ -2,24 +2,23 @@ package com.crisdev.contactkemonappaiep;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.Button;
 import androidx.room.Room;
 import com.crisdev.contactkemonappaiep.database.AppDatabase;
 import com.crisdev.contactkemonappaiep.model.Contacto;
-import com.crisdev.contactkemonappaiep.dao.ContactoDao;
 
-public class FormularioActivity extends AppCompatActivity {
+import android.util.Patterns;
+import android.widget.Toast;
+
+public class AddEditContactActivity extends AppCompatActivity {
 
     private EditText edtNombre, edtTelefono, edtEmail;
     private CheckBox chkFavorito;
-    private Button btnGuardar;
+    private Button btnGuardar, btnCancelar;
     private AppDatabase db;
     private Contacto contactoExistente;
 
@@ -33,6 +32,7 @@ public class FormularioActivity extends AppCompatActivity {
         edtEmail = findViewById(R.id.edtEmail);
         chkFavorito = findViewById(R.id.chkFavorito);
         btnGuardar = findViewById(R.id.btnGuardar);
+        btnCancelar = findViewById(R.id.btnCancelar);
 
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "mi_db")
                 .allowMainThreadQueries()
@@ -51,6 +51,7 @@ public class FormularioActivity extends AppCompatActivity {
         }
 
         btnGuardar.setOnClickListener(v -> {
+            if (!validarCampos()) return;
             if (contactoExistente == null) {
                 Contacto nuevo = new Contacto();
                 nuevo.nombre = edtNombre.getText().toString();
@@ -58,15 +59,40 @@ public class FormularioActivity extends AppCompatActivity {
                 nuevo.email = edtEmail.getText().toString();
                 nuevo.favorito = chkFavorito.isChecked();
                 db.contactoDao().insertar(nuevo);
+                Toast.makeText(this, "Contacto guardado", Toast.LENGTH_SHORT).show();
             } else {
                 contactoExistente.nombre = edtNombre.getText().toString();
                 contactoExistente.telefono = edtTelefono.getText().toString();
                 contactoExistente.email = edtEmail.getText().toString();
                 contactoExistente.favorito = chkFavorito.isChecked();
                 db.contactoDao().actualizar(contactoExistente);
+                Toast.makeText(this, "Contacto actualizado", Toast.LENGTH_SHORT).show();
             }
 
             finish(); // Volver a MainActivity
         });
+        btnCancelar.setOnClickListener(v -> finish());
+    }
+    private boolean validarCampos() {
+        String nombre = edtNombre.getText().toString().trim();
+        String telefono = edtTelefono.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
+
+        if (nombre.isEmpty() || telefono.isEmpty() || email.isEmpty()) {
+            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (telefono.length() < 8) {
+            Toast.makeText(this, "El teléfono debe tener al menos 8 dígitos", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Email no válido", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 }

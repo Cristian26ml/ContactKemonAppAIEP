@@ -1,7 +1,6 @@
 package com.crisdev.contactkemonappaiep;
 
 import android.os.Bundle;
-import android.view.View;
 //import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.crisdev.contactkemonappaiep.adapter.ContactoAdapter;
-import com.crisdev.contactkemonappaiep.dao.ContactoDao;
 import com.crisdev.contactkemonappaiep.database.AppDatabase;
 import com.crisdev.contactkemonappaiep.model.Contacto;
 
@@ -66,14 +64,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listaContactos = new ArrayList<>(db.contactoDao().obtenerTodos());
         adapter = new ContactoAdapter(listaContactos, contacto -> {
-            Intent intent = new Intent(MainActivity.this, FormularioActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddEditContactActivity.class);
             intent.putExtra("contacto_id", contacto.id);
             startActivity(intent);
         }, db.contactoDao());
         recyclerView.setAdapter(adapter);
 
         btnAgregarFlotante.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, FormularioActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddEditContactActivity.class);
             startActivity(intent);
         });
     }
