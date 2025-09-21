@@ -21,4 +21,8 @@ public class Contacto {
 
     @ColumnInfo(name = "favorito")
     public boolean favorito;
+
+    public boolean isFavorito() {
+        return favorito;
+    }
 }

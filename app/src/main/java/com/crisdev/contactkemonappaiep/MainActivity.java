@@ -19,13 +19,18 @@ import java.util.List;
 
 import android.content.Intent;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ContactoAdapter adapter;
     private List<Contacto> listaContactos;
     private AppDatabase db;
-    private Button btnAgregar;
+    private Button btnAgregarFlotante;
+    private EditText edtBuscar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +44,21 @@ public class MainActivity extends AppCompatActivity {
 
         // Referencias UI
         recyclerView = findViewById(R.id.recyclerContactos);
-        btnAgregar = findViewById(R.id.btnAgregar);
+        btnAgregarFlotante = findViewById(R.id.btnAgregarFlotante);
+        edtBuscar = findViewById(R.id.edtBuscar);
+
+        edtBuscar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filtrarContactos(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         // Configurar RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -48,26 +67,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, FormularioActivity.class);
             intent.putExtra("contacto_id", contacto.id);
             startActivity(intent);
-        });
+        }, db.contactoDao());
         recyclerView.setAdapter(adapter);
 
-        // Acción del botón: agregar contacto de prueba
-        btnAgregar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Contacto nuevo = new Contacto();
-                nuevo.nombre = "Contacto solo de prueba aiep";
-                nuevo.telefono = "912345678";
-                nuevo.email = "pruebaaiep@correo.com";
-                nuevo.favorito = false;
-
-                db.contactoDao().insertar(nuevo);
-
-                // Actualizar lista
-                listaContactos.clear();
-                listaContactos.addAll(db.contactoDao().obtenerTodos());
-                adapter.notifyDataSetChanged();
-            }
+        btnAgregarFlotante.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, FormularioActivity.class);
+            startActivity(intent);
         });
     }
     @Override
@@ -77,6 +82,20 @@ public class MainActivity extends AppCompatActivity {
         // Actualizar lista al volver a MainActivity
         listaContactos.clear();
         listaContactos.addAll(db.contactoDao().obtenerTodos());
+        adapter.notifyDataSetChanged();
+    }
+
+    private void filtrarContactos(String texto) {
+        List<Contacto> filtrados = new ArrayList<>();
+        for (Contacto c : db.contactoDao().obtenerTodos()) {
+            if (c.nombre.toLowerCase().contains(texto.toLowerCase()) ||
+                    c.telefono.contains(texto) ||
+                    c.email.toLowerCase().contains(texto.toLowerCase())) {
+                filtrados.add(c);
+            }
+        }
+        listaContactos.clear();
+        listaContactos.addAll(filtrados);
         adapter.notifyDataSetChanged();
     }
 }
