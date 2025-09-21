@@ -13,8 +13,10 @@
 
     <EditText
         android:id="@+id/edtTelefono"
-        android:hint="Teléfono"
+        android:hint="+56 9 XXXX XXXX"
         android:inputType="phone"
+        android:maxLength="17"
+        android:digits="+0123456789 "
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -43,5 +45,14 @@
         android:text="Cancelar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnEliminar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Eliminar contacto"
+        android:backgroundTint="#B00020"
+        android:textColor="#FFFFFF"
+        android:visibility="gone" />
 
 </LinearLayout>

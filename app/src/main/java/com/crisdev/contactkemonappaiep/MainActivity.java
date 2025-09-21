@@ -23,6 +23,8 @@ import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.widget.TextView;
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Inicializar Room con base persistente
+
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "mi_db")
                 .allowMainThreadQueries()
                 .build();
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Configurar RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        listaContactos = new ArrayList<>(db.contactoDao().obtenerTodos());
+        listaContactos = new ArrayList<>(db.contactoDao().obtenerOrdenados());
         adapter = new ContactoAdapter(listaContactos, contacto -> {
             Intent intent = new Intent(MainActivity.this, AddEditContactActivity.class);
             intent.putExtra("contacto_id", contacto.id);
@@ -79,21 +81,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Actualizar lista al volver a MainActivity
+        // Esto permite actualizar lista al volver a MainActivity
         listaContactos.clear();
-        listaContactos.addAll(db.contactoDao().obtenerTodos());
+        listaContactos.addAll(db.contactoDao().obtenerOrdenados());
         adapter.notifyDataSetChanged();
+
+        TextView txtResumen = findViewById(R.id.txtResumen);
+        int totalFavoritos = db.contactoDao().contarFavoritos();
+        txtResumen.setText("Favoritos: " + totalFavoritos);
+
     }
 
     private void filtrarContactos(String texto) {
-        List<Contacto> filtrados = new ArrayList<>();
-        for (Contacto c : db.contactoDao().obtenerTodos()) {
-            if (c.nombre.toLowerCase().contains(texto.toLowerCase()) ||
-                    c.telefono.contains(texto) ||
-                    c.email.toLowerCase().contains(texto.toLowerCase())) {
-                filtrados.add(c);
-            }
-        }
+        List<Contacto> filtrados = db.contactoDao().buscarPorNombre(texto);
         listaContactos.clear();
         listaContactos.addAll(filtrados);
         adapter.notifyDataSetChanged();

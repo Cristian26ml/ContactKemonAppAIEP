@@ -14,6 +14,8 @@ import com.crisdev.contactkemonappaiep.model.Contacto;
 import android.util.Patterns;
 import android.widget.Toast;
 
+import android.view.View;
+
 public class AddEditContactActivity extends AppCompatActivity {
 
     private EditText edtNombre, edtTelefono, edtEmail;
@@ -69,9 +71,28 @@ public class AddEditContactActivity extends AppCompatActivity {
                 Toast.makeText(this, "Contacto actualizado", Toast.LENGTH_SHORT).show();
             }
 
-            finish(); // Volver a MainActivity
+            finish();
         });
         btnCancelar.setOnClickListener(v -> finish());
+
+        Button btnEliminar = findViewById(R.id.btnEliminar);
+
+        if (contactoExistente != null) {
+            btnEliminar.setVisibility(View.VISIBLE);
+
+            btnEliminar.setOnClickListener(v -> {
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle("Eliminar contacto")
+                        .setMessage("¿Estás seguro de que quieres eliminar este contacto?")
+                        .setPositiveButton("Sí", (dialog, which) -> {
+                            db.contactoDao().eliminar(contactoExistente);
+                            Toast.makeText(this, "Contacto eliminado", Toast.LENGTH_SHORT).show();
+                            finish();
+                        })
+                        .setNegativeButton("Cancelar", null)
+                        .show();
+            });
+        }
     }
     private boolean validarCampos() {
         String nombre = edtNombre.getText().toString().trim();
@@ -84,7 +105,7 @@ public class AddEditContactActivity extends AppCompatActivity {
         }
 
         if (telefono.length() < 8) {
-            Toast.makeText(this, "El teléfono debe tener al menos 8 dígitos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Formato de teléfono inválido. Usa: +56 9 XXXX XXXX", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -94,5 +115,12 @@ public class AddEditContactActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private boolean isValidPhone(String phone) {
+        return phone.matches("^\\+56\\s9\\s\\d{4}\\s\\d{4}$");
+    }
+    private boolean isValidEmail(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }

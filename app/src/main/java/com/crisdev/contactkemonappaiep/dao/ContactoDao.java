@@ -30,4 +30,13 @@ public interface ContactoDao {
 
     @Query("SELECT * FROM contactos WHERE id = :id LIMIT 1")
     Contacto buscarPorId(int id);
+
+    @Query("SELECT * FROM contactos ORDER BY favorito DESC, nombre ASC")
+    List<Contacto> obtenerOrdenados();
+
+    @Query("SELECT * FROM contactos WHERE nombre LIKE '%' || :nombre || '%'")
+    List<Contacto> buscarPorNombre(String nombre);
+
+    @Query("SELECT COUNT(*) FROM contactos WHERE favorito = 1")
+    int contarFavoritos();
 }
