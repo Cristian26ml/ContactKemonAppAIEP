@@ -2,7 +2,7 @@ package com.crisdev.contactkemonappaiep;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+//import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,13 +23,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ContactoAdapter adapter;
     private List<Contacto> listaContactos;
     private AppDatabase db;
-    private Button btnAgregarFlotante;
+    private FloatingActionButton btnAgregarFlotante;
     private EditText edtBuscar;
 
     @Override
