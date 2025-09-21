@@ -33,4 +33,5 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
         android:contentDescription="Botón para agregar contacto"/>
+
 </LinearLayout>
